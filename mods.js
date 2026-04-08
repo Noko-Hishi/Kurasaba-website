@@ -16,10 +16,10 @@ const MOD_VERSIONS = [
     totalMods: 90,
     description: "くら鯖の初期Mod構成です。工業・魔法・RPG・農業と幅広くバランスを取った構成です。",
     downloads: {
-      prism:      "v1/v1_prism.zip",
-      modrinth:   "v1/v1_modrinth.mrpack",
-      curseforge: "v1/v1_curse.zip",
-      zip:        "v1/v1_mods.zip",
+      prism:      "https://github.com/Noko-Hishi/Kurasaba-website/releases/download/minecraft/v1_prism.zip",
+      modrinth:   "https://github.com/Noko-Hishi/Kurasaba-website/releases/download/minecraft/v1_modrinth.mrpack",
+      curseforge: "https://github.com/Noko-Hishi/Kurasaba-website/releases/download/minecraft/v1_curse.zip",
+      zip:        "https://github.com/Noko-Hishi/Kurasaba-website/releases/download/minecraft/v1_mods.zip",
     },
     categories: [
 
