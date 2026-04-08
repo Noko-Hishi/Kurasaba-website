@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>くら鯖 - Modサーバー</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #161b27;
+    --bg3: #1e2536;
+    --border: #2a3044;
+    --border2: #3a4460;
+    --text: #e8eaf0;
+    --text2: #9aa3b8;
+    --text3: #5c6480;
+    --accent: #5b9cf6;
+    --accent2: #3b7ae0;
+    --green: #4ade80;
+    --amber: #fbbf24;
+    --purple: #a78bfa;
+    --coral: #f87171;
+    --teal: #2dd4bf;
+    --pink: #f472b6;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+  .logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--text2); }
+  nav { display: flex; gap: 1.5rem; }
+  nav a {
+    font-size: 14px;
+    color: var(--text2);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  nav a:hover { color: var(--text); }
+  nav a.active { color: var(--accent); }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .hero p {
+    font-size: 15px;
+    color: var(--text2);
+    margin-bottom: 1.5rem;
+  }
+  .hero-tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 99px;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    background: var(--bg3);
+  }
+  .tag.forge { border-color: #f97316; color: #f97316; }
+  .tag.ver { border-color: var(--accent); color: var(--accent); }
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1.5rem;
+    padding: 10px 24px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.15s;
+  }
+  .download-btn:hover { background: var(--accent2); }
+
+  /* ===== MAIN LAYOUT ===== */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    position: sticky;
+    top: 76px;
+  }
+  .sidebar-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.75rem;
+    padding: 0 8px;
+  }
+  .sidebar-nav { display: flex; flex-direction: column; gap: 2px; }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    transition: background 0.1s, color 0.1s;
+    cursor: pointer;
+  }
+  .sidebar-link:hover { background: var(--bg3); color: var(--text); }
+  .sidebar-link.active { background: var(--bg3); color: var(--accent); }
+  .sidebar-link .icon { font-size: 14px; width: 18px; text-align: center; }
+  .sidebar-count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* ===== CONTENT ===== */
+  .content { min-width: 0; }
+
+  .category-section { margin-bottom: 3rem; }
+  .category-section:last-child { margin-bottom: 0; }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .category-icon { font-size: 20px; }
+  .category-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .category-count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  /* ===== MOD CARD ===== */
+  .mod-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .mod-card:hover { border-color: var(--border2); }
+
+  .mod-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+  }
+  .mod-icon-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .mod-body { flex: 1; min-width: 0; }
+  .mod-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .mod-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 99px;
+    font-weight: 400;
+  }
+  .badge-addon { background: rgba(91,156,246,0.15); color: var(--accent); border: 1px solid rgba(91,156,246,0.3); }
+  .badge-jp { background: rgba(251,191,36,0.15); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
+  .badge-original { background: rgba(248,113,113,0.15); color: var(--coral); border: 1px solid rgba(248,113,113,0.3); }
+
+  .mod-desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  /* ===== ADDON TOGGLE ===== */
+  .addon-toggle-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: var(--text3);
+    font-size: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+    text-align: left;
+    transition: background 0.1s, color 0.1s;
+  }
+  .addon-toggle-btn:hover { background: var(--bg3); color: var(--text2); }
+  .toggle-arrow {
+    display: inline-block;
+    transition: transform 0.2s;
+    font-style: normal;
+    font-size: 10px;
+  }
+  .addon-toggle-btn.open .toggle-arrow { transform: rotate(90deg); }
+
+  /* ===== ADDON LIST ===== */
+  .addon-list {
+    display: none;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+  .addon-list.open { display: block; }
+
+  .addon-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px 12px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .addon-item:last-child { border-bottom: none; }
+  .addon-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border2);
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  .addon-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .addon-desc {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .main { grid-template-columns: 1fr; }
+    .sidebar { position: static; display: flex; gap: 8px; flex-wrap: wrap; }
+    .sidebar-title { display: none; }
+    .sidebar-nav { flex-direction: row; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">くら鯖<span>.net</span></div>
+    <nav>
+      <a href="#" class="active">Mod一覧</a>
+      <a href="#">ダウンロード</a>
+      <a href="#">参加方法</a>
+      <a href="#">ルール</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Mod一覧</h1>
+  <p>くら鯖で導入しているModの紹介です。各Modをクリックすると詳細を確認できます。</p>
+  <div class="hero-tags">
+    <span class="tag forge">Forge</span>
+    <span class="tag ver">Minecraft 1.20.1</span>
+    <span class="tag">Mod数 約90</span>
+  </div>
+  <a href="#" class="download-btn">
+    ⬇ Modpackをダウンロード
+  </a>
+</div>
+
+<div class="main">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-title">カテゴリ</div>
+    <div class="sidebar-nav">
+      <a class="sidebar-link active" href="#industrial" onclick="scrollTo('industrial')">
+        <span class="icon">⚙️</span> 自動化・工業
+        <span class="sidebar-count">13</span>
+      </a>
+      <a class="sidebar-link" href="#storage">
+        <span class="icon">🎒</span> 収納・ストレージ
+        <span class="sidebar-count">9</span>
+      </a>
+      <a class="sidebar-link" href="#combat">
+        <span class="icon">⚔️</span> 戦闘・魔法・RPG
+        <span class="sidebar-count">9</span>
+      </a>
+      <a class="sidebar-link" href="#exploration">
+        <span class="icon">🌍</span> 探索・ディメンション
+        <span class="sidebar-count">5</span>
+      </a>
+      <a class="sidebar-link" href="#food">
+        <span class="icon">🍳</span> 食べ物・農業
+        <span class="sidebar-count">6</span>
+      </a>
+      <a class="sidebar-link" href="#utility">
+        <span class="icon">🏗️</span> 建築・利便性
+        <span class="sidebar-count">5</span>
+      </a>
+      <a class="sidebar-link" href="#qol">
+        <span class="icon">🔧</span> QoL・ゲームプレイ改善
+        <span class="sidebar-count">11</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ===== CONTENT ===== -->
+  <main class="content">
+
+    <!-- ========== 自動化・工業 ========== -->
+    <section class="category-section" id="industrial">
+      <div class="category-header">
+        <span class="category-icon">⚙️</span>
+        <span class="category-title">自動化・工業</span>
+        <span class="category-count">13 Mods</span>
+      </div>
+
+      <!-- Create -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🔩</div>
+          <div class="mod-body">
+            <div class="mod-name">Create <span class="mod-badge badge-addon">Addon 3個</span></div>
+            <div class="mod-desc">歯車・ベルトコンベア・水車などの機械部品を組み合わせて自動化ラインを構築するMod。バニラに近いクラフトの延長で楽しめ、見た目にも動きのある工場が作れる。シャフトや回転数の概念があり、奥深い設計が可能。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> Addonを見る (3個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Applied Create</div>
+              <div class="addon-desc">CreateとApplied Energistics 2を連携させるAddon。Createの機構でAE2のネットワークに対してアイテムを自動投入・取り出しできるようになる。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Create Jetpack + Curios</div>
+              <div class="addon-desc">Createの素材を使ってジェットパックを作れるAddon。Curios連携で専用スロットに装備でき、インベントリを圧迫しない。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">TofuCreate</div>
+              <div class="addon-desc">TofuCraftとCreateを連携させるAddon。豆腐素材でCreateのパーツを作れるようになる。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mekanism -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">⚗️</div>
+          <div class="mod-body">
+            <div class="mod-name">Mekanism <span class="mod-badge badge-addon">Addon 5個</span></div>
+            <div class="mod-desc">鉱石の5倍化精錬・液体・ガスのパイプ輸送・高度な機械システムを提供する大規模工業Mod。序盤から終盤まで段階的に進化する技術ツリーが用意されており、大規模な工場ラインを構築できる。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> Addonを見る (5個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Mekanism Generators</div>
+              <div class="addon-desc">太陽光パネル・風力発電機・核融合炉など多様な発電手段を追加するMod。Mekanismのエネルギー（Joules）を大量生産できる。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Mekanism Tools</div>
+              <div class="addon-desc">Mekanismの素材（オスミウム・精製鉄など）で作れる強力な武器・防具・ツールを追加。エネルギーで駆動するアイテムも含まれる。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Mekanism Additions</div>
+              <div class="addon-desc">プラスチックブロックや追加MOBなど、Mekanismの世界観を拡張するコンテンツを追加する。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Mekanism Advanced Generators</div>
+              <div class="addon-desc">ガスタービン・熱発電など高度な発電システムを追加するAddon。大型施設向けの巨大な発電機も含まれる。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Mekanism Curios</div>
+              <div class="addon-desc">MekanismのアイテムをCuriosの専用スロットで装備可能にするAddon。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Applied Energistics 2 -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">💾</div>
+          <div class="mod-body">
+            <div class="mod-name">Applied Energistics 2 <span class="mod-badge badge-addon">Addon 6個</span></div>
+            <div class="mod-desc">アイテムをデジタルデータとして管理する大規模ストレージシステム「MEネットワーク」を追加するMod。端末一つで数万種類のアイテムを検索・取り出し可能。自動クラフトシステムと組み合わせることで工場の全自動化が実現できる。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> Addonを見る (6個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Advanced AE</div>
+              <div class="addon-desc">AE2に高度な機能を追加するAddon。大容量ストレージセルや高機能な端末など、AE2をさらに強化するコンテンツが充実している。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">AE2 Omni Cells</div>
+              <div class="addon-desc">アイテム・流体・エネルギーを一つのセルにまとめて格納できるAddon。管理の煩雑さを大幅に軽減する。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">AE2 QoL Recipes</div>
+              <div class="addon-desc">AE2の一部クラフトレシピをより使いやすく調整するAddon。序盤の敷居を下げてくれる。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">AE2 Wireless Terminal Lib</div>
+              <div class="addon-desc">AE2のワイヤレス端末を拡張するライブラリ。無線でMEネットワークに接続できる距離や機能を強化する。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Applied Mekanistics</div>
+              <div class="addon-desc">AE2とMekanismを連携させるAddon。Mekanismのガスや化学物質をAE2のネットワークで管理できるようになる。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Applied Flux</div>
+              <div class="addon-desc">AE2ネットワーク内でRF/FEエネルギーをストレージとして管理・送受信できるようにするAddon。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RFTools -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">📡</div>
+          <div class="mod-body">
+            <div class="mod-name">RFToolsシリーズ <span class="mod-badge badge-addon">6モジュール</span></div>
+            <div class="mod-desc">RF（エネルギー）を中心とした多機能な工業Modシリーズ。建築・制御・ディメンション生成・電力など幅広い分野をカバーする。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> モジュールを見る (6個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">RFTools Base</div>
+              <div class="addon-desc">RFToolsシリーズ共通の基盤ライブラリ。他のRFToolsモジュールを動かすために必要。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">RFTools Builder</div>
+              <div class="addon-desc">指定した範囲を自動で建築・採掘できる多機能ビルダーMod。設計図を読み込んで自動建築する機能も持つ。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">RFTools Control</div>
+              <div class="addon-desc">プログラムを組んで自動処理を作れる制御Mod。複雑な自動化ラインの分岐処理なども記述できる。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">RFTools Dimensions</div>
+              <div class="addon-desc">独自のディメンション（異空間）を自分で生成・カスタマイズできるMod。素材で地形や環境を決定できる。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">RFTools Power</div>
+              <div class="addon-desc">大容量のエネルギー貯蔵・送電システムを追加するMod。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">RFTools Utility</div>
+              <div class="addon-desc">テレポーター・スクリーン・その他の便利なユーティリティツールを多数追加するMod。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Industrial Foregoing -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🏭</div>
+          <div class="mod-body">
+            <div class="mod-name">Industrial Foregoing</div>
+            <div class="mod-desc">植物の自動収穫・液体製造・MOBファームなど、多種多様な工業機械を追加するMod。バイオマスやプラスチックを素材として使用するユニークなシステムが特徴。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Integrated Dynamics -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🔌</div>
+          <div class="mod-body">
+            <div class="mod-name">Integrated Dynamics <span class="mod-badge badge-addon">Addon 1個</span></div>
+            <div class="mod-desc">ネットワークを介してブロックの状態を読み取り、論理回路のように自動化を組める高度なMod。レッドストーンを超えた複雑な条件分岐処理が可能。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> Addonを見る (1個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Integrated Tunnels</div>
+              <div class="addon-desc">Integrated Dynamicsのネットワークでアイテム・液体・エネルギーを輸送するパイプシステムを追加するAddon。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Solar Flux Reborn -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">☀️</div>
+          <div class="mod-body">
+            <div class="mod-name">Solar Flux Reborn <span class="mod-badge badge-addon">Addon 1個</span></div>
+            <div class="mod-desc">複数段階の太陽光パネルを追加するMod。日照時間にRFエネルギーを発電する。上位パネルほど発電量が大幅に増加する。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> Addonを見る (1個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Applied Flux</div>
+              <div class="addon-desc">AE2ネットワークでエネルギーを管理するAddon（Solar Flux Rebornとの連携にも活用できる）。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mob Grinding Utils -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">⚡</div>
+          <div class="mod-body">
+            <div class="mod-name">Mob Grinding Utils</div>
+            <div class="mod-desc">MOBを効率よく処理してドロップを自動回収するための機械・ブロックを追加するMod。巨大なMOBファームの構築に欠かせない。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compacter -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">📦</div>
+          <div class="mod-body">
+            <div class="mod-name">Compacter</div>
+            <div class="mod-desc">アイテムを自動でブロックに圧縮する機械を追加するMod。大量の素材を効率よく圧縮して保管したいときに便利。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EnderIO -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🌑</div>
+          <div class="mod-body">
+            <div class="mod-name">Ender IO</div>
+            <div class="mod-desc">導管（Conduit）でアイテム・液体・エネルギーを一本にまとめて輸送できる工業Mod。機械類も充実しており、コンパクトな工場設計が得意。</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========== 収納・ストレージ ========== -->
+    <section class="category-section" id="storage">
+      <div class="category-header">
+        <span class="category-icon">🎒</span>
+        <span class="category-title">収納・ストレージ</span>
+        <span class="category-count">9 Mods</span>
+      </div>
+
+      <!-- Sophisticated Backpacks -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🎒</div>
+          <div class="mod-body">
+            <div class="mod-name">Sophisticated Backpacks <span class="mod-badge badge-addon">Addon 1個</span></div>
+            <div class="mod-desc">高度にカスタマイズ可能なバックパックを追加するMod。アップグレードを差し込むことで自動回収・自動補充・フィルタリングなど様々な機能を追加できる。素材を変えてより大容量のバックパックを作れる。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> Addonを見る (1個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Sophisticated Backpacks Create Integration</div>
+              <div class="addon-desc">Sophisticated BackpacksとCreateを連携させるAddon。Createのパーツを使ったバックパックのアップグレードが追加される。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sophisticated Storage -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🗄️</div>
+          <div class="mod-body">
+            <div class="mod-name">Sophisticated Storage</div>
+            <div class="mod-desc">Sophisticated Backpacksと同じシステムのストレージ箱を追加するMod。アップグレードで自動仕分け・フィルタリングなどの機能を付与できる。見た目もおしゃれでインテリアとしても映える。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Storage Drawers -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🗃️</div>
+          <div class="mod-body">
+            <div class="mod-name">Storage Drawers</div>
+            <div class="mod-desc">特定のアイテムを大量に収納できる引き出し型ストレージを追加するMod。前面に収納量が表示され、クリックで直接出し入れできるのが特徴。AE2と組み合わせて使うことが多い。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Iron Chest -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">📫</div>
+          <div class="mod-body">
+            <div class="mod-name">Iron Chest</div>
+            <div class="mod-desc">鉄・金・ダイヤモンドなど様々な素材で作れる大容量チェストを追加するMod。バニラのチェストより多くのスロットを持ち、整理整頓に役立つ。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Iron Shulker Box -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🧲</div>
+          <div class="mod-body">
+            <div class="mod-name">Iron Shulker Box</div>
+            <div class="mod-desc">Iron Chestと同様に様々な素材のシュルカーボックスを追加するMod。バニラより多いスロット数を持ち、大量の持ち運びが可能になる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Storage Box -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">📥</div>
+          <div class="mod-body">
+            <div class="mod-name">Storage Box <span class="mod-badge badge-jp">日本製Mod</span></div>
+            <div class="mod-desc">倉庫の収納箱のように、同じアイテムを大量にまとめて入れられるシンプルなストレージブロックを追加するMod。直感的な操作性が特徴の日本製Mod。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- StorageBoxAdapter -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🔗</div>
+          <div class="mod-body">
+            <div class="mod-name">Storage Box Adapter</div>
+            <div class="mod-desc">Storage BoxをAE2などの外部ネットワークと接続するためのアダプターを追加するMod。Storage BoxをMEシステムに組み込める。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extended Terminal -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🖥️</div>
+          <div class="mod-body">
+            <div class="mod-name">Extended Terminal</div>
+            <div class="mod-desc">AE2のME端末の機能を拡張するMod。より多くのアイテムを一覧表示できる大型端末などを追加する。</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========== 戦闘・魔法・RPG ========== -->
+    <section class="category-section" id="combat">
+      <div class="category-header">
+        <span class="category-icon">⚔️</span>
+        <span class="category-title">戦闘・魔法・RPG</span>
+        <span class="category-count">9 Mods</span>
+      </div>
+
+      <!-- Epic Fight -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🥊</div>
+          <div class="mod-body">
+            <div class="mod-name">Epic Fight <span class="mod-badge badge-addon">Addon 1個</span></div>
+            <div class="mod-desc">マインクラフトの戦闘システムをアクションRPG風に刷新するMod。武器ごとにコンボや特殊攻撃が追加され、ガード・回避の概念が生まれる。ボスとの戦闘が大幅に熱くなる。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> Addonを見る (1個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Epic Fight Invincible Lib</div>
+              <div class="addon-desc">Epic Fightの無敵フレーム処理を拡張するライブラリ。他のModとの互換性を向上させる。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sword Soaring -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🗡️</div>
+          <div class="mod-body">
+            <div class="mod-name">Sword Soaring</div>
+            <div class="mod-desc">Epic Fightと連携する剣技・空中コンボを追加するMod。空中での追撃や特殊な剣技が使えるようになり、戦闘の幅が広がる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slash Blade Resharpened -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">⚔️</div>
+          <div class="mod-body">
+            <div class="mod-name">Slash Blade Resharpened</div>
+            <div class="mod-desc">日本刀をモチーフにした特殊な刀を追加するMod。居合いや払い斬りなど独自のアクションが搭載されており、Epic Fightとも相性が良い。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SJAP Resharpened -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🏹</div>
+          <div class="mod-body">
+            <div class="mod-name">SJAP Resharpened</div>
+            <div class="mod-desc">Slash Blade Resharpenedの拡張Mod。追加の刀種類やスキルが収録されている。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ars Nouveau -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">✨</div>
+          <div class="mod-body">
+            <div class="mod-name">Ars Nouveau</div>
+            <div class="mod-desc">魔法の書に呪文を組み合わせることで、独自の魔法を自作できるMagic系Mod。飛行・召喚・属性攻撃など多彩な効果を組み合わせて強力な魔法を作れる。魔法少女・魔法使い系プレイに最適。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blood Magic -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🩸</div>
+          <div class="mod-body">
+            <div class="mod-name">Blood Magic</div>
+            <div class="mod-desc">自身のHPを血として捧げることで強力な魔法や儀式を行えるダークMagic系Mod。生命力（LP）を蓄えた祭壇を強化しながら進む独特の進行システムが特徴。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mahoutsukai -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🔮</div>
+          <div class="mod-body">
+            <div class="mod-name">Mahoutsukai (魔法使い)</div>
+            <div class="mod-desc">和風・東洋風の魔法体験を提供するMagic系Mod。独自の魔法システムと武器・防具が追加され、Ars NouveauやBlood Magicとは異なる方向性の魔法プレイができる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sons of Sins -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">😈</div>
+          <div class="mod-body">
+            <div class="mod-name">Sons of Sins</div>
+            <div class="mod-desc">七大罪をテーマにした強力なボスやモンスターを追加するMod。それぞれのボスが固有の攻撃パターンを持ち、やりごたえのある戦闘が楽しめる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Infernal Mobs -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">👹</div>
+          <div class="mod-body">
+            <div class="mod-name">Infernal Mobs</div>
+            <div class="mod-desc">一部のMOBがランダムに強化されてエリートMOBとして出現するMod。特殊な能力（テレポート・分裂・高速移動など）を持ち、倒すと良いドロップを落とす。</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========== 探索・ディメンション ========== -->
+    <section class="category-section" id="exploration">
+      <div class="category-header">
+        <span class="category-icon">🌍</span>
+        <span class="category-title">探索・ディメンション</span>
+        <span class="category-count">5 Mods</span>
+      </div>
+
+      <!-- Deeper Darker -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🌑</div>
+          <div class="mod-body">
+            <div class="mod-name">Deeper Darker</div>
+            <div class="mod-desc">ディープダークバイオームをさらに拡張するMod。新しいブロック・構造物・アイテムが追加され、スカルクの探索がより楽しくなる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beyond Earth -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🚀</div>
+          <div class="mod-body">
+            <div class="mod-name">Beyond Earth</div>
+            <div class="mod-desc">ロケットを作って月・火星などの惑星へ探索に行けるSF系Mod。各惑星に独自の環境・資源・敵MOBが存在し、宇宙開発のロマンが味わえる（1.20.1対応のプレリリース版）。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voidscape -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🌌</div>
+          <div class="mod-body">
+            <div class="mod-name">Voidscape</div>
+            <div class="mod-desc">虚無の空間をテーマにした新しいディメンションと独自のボス・素材を追加するMod。高難度の探索コンテンツが楽しめる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Goblin Traders -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">👺</div>
+          <div class="mod-body">
+            <div class="mod-name">Goblin Traders</div>
+            <div class="mod-desc">地下や森にゴブリン商人が出現するMod。ユニークなアイテムを取引でき、旅の途中で思わぬ掘り出し物が見つかることも。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Waystones -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🗿</div>
+          <div class="mod-body">
+            <div class="mod-name">Waystones</div>
+            <div class="mod-desc">ワープポイント（ウェイストーン）を設置・登録することで、世界中を瞬時に移動できるMod。探索範囲が広くなるサーバーでの移動コストを大幅に削減してくれる。</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========== 食べ物・農業 ========== -->
+    <section class="category-section" id="food">
+      <div class="category-header">
+        <span class="category-icon">🍳</span>
+        <span class="category-title">食べ物・農業</span>
+        <span class="category-count">6 Mods</span>
+      </div>
+
+      <!-- Farmer's Delight -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🌾</div>
+          <div class="mod-body">
+            <div class="mod-name">Farmer's Delight <span class="mod-badge badge-addon">多数のAddonの基盤</span></div>
+            <div class="mod-desc">農業と料理を大幅に拡張するMod。新しい作物・食材・調理台が追加され、様々な料理を作れるようになる。多くのAddonがこのModを基盤としている。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aquaculture -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🎣</div>
+          <div class="mod-body">
+            <div class="mod-name">Aquaculture 2 <span class="mod-badge badge-addon">Addon 1個</span></div>
+            <div class="mod-desc">釣りを大幅に拡張するMod。80種類以上の魚・釣り道具・特殊アイテムが追加され、釣りがひとつのコンテンツとして楽しめるようになる。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> Addonを見る (1個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Aquaculture Delight</div>
+              <div class="addon-desc">AquacultureとFarmer's Delightを連携させるAddon。釣れた魚をFarmer's Delightの調理台で料理できるようになる。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cooking for Blockheads -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🍽️</div>
+          <div class="mod-body">
+            <div class="mod-name">Cooking for Blockheads</div>
+            <div class="mod-desc">キッチンカウンター・冷蔵庫・オーブンなどのブロックを追加し、料理の自動化・管理を簡単にするMod。Farmer's Delightと組み合わせると豪華なキッチンが作れる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TofuCraft -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">⬜</div>
+          <div class="mod-body">
+            <div class="mod-name">TofuCraft Reload <span class="mod-badge badge-addon">Addon 2個</span></div>
+            <div class="mod-desc">豆腐を素材としたブロック・食料・武器・防具を追加するユニークなMod。豆腐のディメンションまで存在するユーモアあふれる作品。日本発の人気Modの1.20.1対応版。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> Addonを見る (2個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">TofuCreate</div>
+              <div class="addon-desc">TofuCraftとCreateを連携させるAddon。豆腐素材でCreateのパーツを作れるようになる。</div>
+            </div>
+          </div>
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Tofu Delight</div>
+              <div class="addon-desc">TofuCraftとFarmer's Delightを連携させるAddon。豆腐を使った新しい料理レシピが追加される。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========== 建築・利便性 ========== -->
+    <section class="category-section" id="utility">
+      <div class="category-header">
+        <span class="category-icon">🏗️</span>
+        <span class="category-title">建築・利便性</span>
+        <span class="category-count">5 Mods</span>
+      </div>
+
+      <!-- Elevator -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🛗</div>
+          <div class="mod-body">
+            <div class="mod-name">Elevator ID</div>
+            <div class="mod-desc">同じIDを設定したエレベーターブロックをジャンプ・スニーク操作で上下移動できるMod。高層建築の移動が格段に楽になる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comforts -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🛏️</div>
+          <div class="mod-body">
+            <div class="mod-name">Comforts</div>
+            <div class="mod-desc">ハンモックとスリーピングバッグを追加するMod。スリーピングバッグは夜をスキップするだけでリスポーン地点を変えない。ハンモックは昼をスキップできる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arcane Lanterns -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🏮</div>
+          <div class="mod-body">
+            <div class="mod-name">Arcane Lanterns</div>
+            <div class="mod-desc">様々な色・スタイルの魔法的なランタンを追加する装飾系Mod。建築のインテリア・エクステリアに彩りを添えることができる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Shield Variants -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🛡️</div>
+          <div class="mod-body">
+            <div class="mod-name">New Shield Variants</div>
+            <div class="mod-desc">様々な素材で作れる新しい盾を追加するMod。素材によって防御性能が異なり、ファッション性も高い。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gravestone -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🪦</div>
+          <div class="mod-body">
+            <div class="mod-name">Gravestone</div>
+            <div class="mod-desc">死亡時にアイテムをその場に散らかさず、墓石にまとめてくれるMod。墓石を右クリックするとアイテムを全回収できる。マルチプレイでのデス時のアイテム消失防止に便利。</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========== QoL・ゲームプレイ改善 ========== -->
+    <section class="category-section" id="qol">
+      <div class="category-header">
+        <span class="category-icon">🔧</span>
+        <span class="category-title">QoL・ゲームプレイ改善</span>
+        <span class="category-count">11 Mods</span>
+      </div>
+
+      <!-- JEI -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">📖</div>
+          <div class="mod-body">
+            <div class="mod-name">Just Enough Items (JEI) <span class="mod-badge badge-addon">Addon 1個</span></div>
+            <div class="mod-desc">すべてのアイテムのクラフトレシピ・使用用途を画面右側に一覧表示するMod。Modを大量に入れたとき必須の定番Mod。アイテムをクリックするだけでレシピを調べられる。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> Addonを見る (1個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Just Enough Resources (JER)</div>
+              <div class="addon-desc">JEIにMOBのドロップ一覧・鉱石の生成高度などの情報を追加するAddon。どのMOBから何がドロップするかをJEIから確認できる。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jade -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🔍</div>
+          <div class="mod-body">
+            <div class="mod-name">Jade <span class="mod-badge badge-addon">Addon 1個</span></div>
+            <div class="mod-desc">カーソルを向けたブロック・MOBの情報を画面に表示するMod（Wailaの後継）。機械の動作状態・在庫・エネルギー量なども確認できる。</div>
+          </div>
+        </div>
+        <button class="addon-toggle-btn" onclick="toggleAddon(this)">
+          <i class="toggle-arrow">▶</i> Addonを見る (1個)
+        </button>
+        <div class="addon-list">
+          <div class="addon-item">
+            <div class="addon-dot"></div>
+            <div>
+              <div class="addon-name">Jade Addons</div>
+              <div class="addon-desc">Jadeに対応Modを増やすAddon。より多くのModのブロック情報がJadeで表示されるようになる。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CutAll / DigAll / MineAll -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">⛏️</div>
+          <div class="mod-body">
+            <div class="mod-name">CutAll / DigAll / MineAll SMP <span class="mod-badge badge-jp">日本製Mod</span></div>
+            <div class="mod-desc">木を1ブロック壊すと丸ごと伐採（CutAll）、土系ブロックを一括掘削（DigAll）、鉱石を連鎖採掘（MineAll）できるMod群。SNEAKキーで通常採掘と切り替え可能。サーバー対応のSMP版。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PickupWidely -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🧲</div>
+          <div class="mod-body">
+            <div class="mod-name">PickupWidely SMP <span class="mod-badge badge-jp">日本製Mod</span></div>
+            <div class="mod-desc">周辺に落ちているアイテムを広範囲で自動回収できるようにするMod。採掘や戦闘後のドロップ拾いが格段に楽になる。サーバー対応のSMP版。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Get It Together Drops -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🎯</div>
+          <div class="mod-body">
+            <div class="mod-name">Get It Together Drops</div>
+            <div class="mod-desc">地面に落ちたアイテムを近くの同種アイテムと自動でまとめるMod。大量ドロップ時のTPS低下を防ぎ、サーバーのパフォーマンス改善にも貢献する。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clumps -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">✨</div>
+          <div class="mod-body">
+            <div class="mod-name">Clumps</div>
+            <div class="mod-desc">経験値オーブを周辺のものとまとめて大きな塊にするMod。経験値エンティティが減ることでサーバーのTPS低下を防ぐ。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Improvements -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🤖</div>
+          <div class="mod-body">
+            <div class="mod-name">AI Improvements</div>
+            <div class="mod-desc">MOBのAI処理を最適化してサーバー・クライアントのパフォーマンスを改善するMod。多数のMOBがいる環境でも動作が重くなりにくくなる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ScalableCatsForce -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">⚡</div>
+          <div class="mod-body">
+            <div class="mod-name">ScalableCatsForce</div>
+            <div class="mod-desc">サーバーのネットワーク処理を最適化するパフォーマンス改善Mod。多人数プレイ時の通信負荷を軽減し、サーバーの安定性を高める。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Entity Attributes -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">📊</div>
+          <div class="mod-body">
+            <div class="mod-name">Additional Entity Attributes</div>
+            <div class="mod-desc">エンティティに追加のアトリビュート（属性値）を付与できるようにするMod。他のModがより細かくMOBのパラメータを調整するための基盤となる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Elytra Slot -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🪂</div>
+          <div class="mod-body">
+            <div class="mod-name">Elytra Slot</div>
+            <div class="mod-desc">エリトラを胸部スロットとは別の専用スロットに装備できるようにするMod。鎧を着たままエリトラを使えるようになり、防御と移動を両立できる。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Entity Attributes -->
+      <div class="mod-card">
+        <div class="mod-main">
+          <div class="mod-icon-wrap">🎲</div>
+          <div class="mod-body">
+            <div class="mod-name">Additional Entity Attributes</div>
+            <div class="mod-desc">MOBや他エンティティに追加のゲームアトリビュートを設定できるようにするMod。他のModとの連携で、MOBのカスタマイズ性が広がる。</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script>
+  function toggleAddon(btn) {
+    const isOpen = btn.classList.contains('open');
+    btn.classList.toggle('open', !isOpen);
+    const list = btn.nextElementSibling;
+    list.classList.toggle('open', !isOpen);
+    const count = btn.textContent.match(/\((\d+)個\)/)?.[0] || '';
+    btn.innerHTML = `<i class="toggle-arrow${!isOpen ? ' open' : ''}">▶</i> ${!isOpen ? 'Addonを隠す ' : 'Addonを見る '}${count}`;
+  }
+
+  // サイドバーのアクティブ状態をスクロールに合わせて更新
+  const sections = document.querySelectorAll('.category-section');
+  const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 100;
+      if (window.scrollY >= sectionTop) {
+        current = section.getAttribute('id');
+      }
+    });
+    sidebarLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
